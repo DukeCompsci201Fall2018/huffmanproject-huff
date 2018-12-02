@@ -59,9 +59,9 @@ public class HuffProcessor {
 	 */
 	public void decompress(BitInputStream in, BitOutputStream out){
 		int bits = in.readBits(BITS_PER_INT);
-		if (bits <= -1) {
-			throw new HuffException("reading bits failed");
-		}
+//		if (bits <= -1) {
+//			throw new HuffException("reading bits failed");
+//		}
 		if (bits != HUFF_TREE) {
 			throw new HuffException("illegal header starts with"+ bits);
 		}
