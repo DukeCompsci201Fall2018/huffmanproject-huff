@@ -77,11 +77,11 @@ public class HuffProcessor {
 
 	private void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
 		 HuffNode current = root; 
-		 if(current ==null) {
-			 throw new HuffException("bad input, no tree");
-		 }
+		 
 		   while (true) {
-			   
+			   if(current ==null) {
+					 throw new HuffException("bad input, no tree");
+				 }
 		       int bits = in.readBits(1);
 		       if (bits == -1) {
 		           throw new HuffException("bad input, no PSEUDO_EOF");
