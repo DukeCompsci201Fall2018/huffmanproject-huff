@@ -1,3 +1,6 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.PriorityQueue;
 
 /**
  * Although this class has a history of several years,
@@ -23,6 +26,7 @@ public class HuffProcessor {
 	
 	public static final int DEBUG_HIGH = 4;
 	public static final int DEBUG_LOW = 1;
+	HashMap<Integer,String> myMap = new HashMap<>();
 	
 	public HuffProcessor() {
 		this(0);
@@ -41,13 +45,116 @@ public class HuffProcessor {
 	 *            Buffered bit stream writing to the output file.
 	 */
 	public void compress(BitInputStream in, BitOutputStream out){
-
+		int[] counts = readForCounts(in);
+		HuffNode root = makeTreeFromCounts(counts);
+		String[] codings = makeCodingsFromTree(root);
+		out.writeBits(BITS_PER_INT, HUFF_TREE);
+		writeHeader(root,out);
+		in.reset();
+		writeCompressedBits(codings, in, out);
+		out.close();
+		
+		
+	}
+	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
 		while (true){
-			int val = in.readBits(BITS_PER_WORD);
+			Integer val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
+			String code = codings[Integer.parseInt(val.toString(),2)];
+			 out.writeBits(code.length(), Integer.parseInt(code,2));
+		}
+
+		
+	}
+
+	private void writeHeader(HuffNode root, BitOutputStream out) {
+		if (root.myLeft!=null || root.myRight!=null) {
+			out.write(0);
+		    writeHeader(root.myLeft, out);
+		    writeHeader(root.myRight, out);
+		}
+		else {
+		    int value = root.myValue;
+		    out.write(1);
+		    out.write(value);
 		}
 	}
+		
+	
+	private String[] makeCodingsFromTree(HuffNode root) {
+		
+		doWork(root,"");
+		String[] ret = new String[myMap.size()];
+		int index = 0;
+		for(int s : myMap.keySet()) {
+			ret[index] = myMap.get(s);
+			index += 1;
+		}
+		return ret;
+	}
+	
+	private void doWork(HuffNode root, String path) {
+		if (root == null) return;
+		
+		if (root.myLeft == null && root.myRight == null) {
+			myMap.put(root.myValue, path);
+			return;
+		}
+		doWork(root.myLeft,path+"0");
+		doWork(root.myRight,path+"1");
+	}
+//	private String[] makeCodingsFromTree(HuffNode root) {
+//	    String[] encodings = new String[ALPH_SIZE + 1];
+//	    codingHelper(root,"",encodings);
+//
+//		return null;
+//	}
+//
+//	private void codingHelper(HuffNode root, String string, String[] encodings) {
+//		   if (root.myLeft==null && root.myRight== null) {
+//		        encodings[root.myValue] = path;
+//		        return;
+//		   }
+//		
+//	}
+
+	private HuffNode makeTreeFromCounts(int[] counts) {
+		//may need to reverse
+		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
+		Arrays.sort(counts);
+		for(Integer t : counts) {
+			if (counts[t]>0) {
+				pq.add(new HuffNode(t,counts[t],null,null));
+			}
+		    
+		}
+
+		while (pq.size() > 1) {
+		    HuffNode left = pq.remove();
+		    HuffNode right = pq.remove();
+		    HuffNode s= new HuffNode(0,left.myWeight+right.myWeight,left,right);
+		    // create new HuffNode t with weight from
+		    // left.weight+right.weight and left, right subtrees
+		    pq.add(s);
+		}
+		HuffNode root = pq.remove();
+
+		return root;
+	}
+
+	private int[] readForCounts(BitInputStream in) {
+		int [] counts = new int [ALPH_SIZE + 1];
+		
+		while (true){
+			Integer val = in.readBits(BITS_PER_WORD);
+			if (val == -1) break;
+			int charCode = Integer.parseInt(val.toString(), 2);
+			counts[charCode]+=1;
+		}
+		counts[counts.length-1] = 1;
+		return counts;
+	}
+
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
 	 * original.
