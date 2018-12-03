@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.PriorityQueue;
 
 /**
@@ -26,7 +25,6 @@ public class HuffProcessor {
 	
 	public static final int DEBUG_HIGH = 4;
 	public static final int DEBUG_LOW = 1;
-	HashMap<Integer,String> myMap = new HashMap<>();
 	
 	public HuffProcessor() {
 		this(0);
