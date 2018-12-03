@@ -59,11 +59,9 @@ public class HuffProcessor {
 			Integer val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
 			String code = codings[val];
-			System.out.println(code);
 			 out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
 		String code = codings[PSEUDO_EOF];
-		System.out.println(code);
 	    out.writeBits(code.length(), Integer.parseInt(code,2));
 
 
@@ -106,11 +104,9 @@ public class HuffProcessor {
 	}
 
 	private HuffNode makeTreeFromCounts(int[] counts) {
-		//may need to reverse
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 		for(int t = 0; t<counts.length; t++) {
 			if (counts[t]>0) {
-				//String s = Integer.toBinaryString(t);
 				pq.add(new HuffNode(t,counts[t],null,null));
 			}
 		    
@@ -120,8 +116,6 @@ public class HuffProcessor {
 		    HuffNode left = pq.remove();
 		    HuffNode right = pq.remove();
 		    HuffNode s= new HuffNode(-1,left.myWeight+right.myWeight,left,right);
-		    // create new HuffNode t with weight from
-		    // left.weight+right.weight and left, right subtrees
 		    pq.add(s);
 		}
 
