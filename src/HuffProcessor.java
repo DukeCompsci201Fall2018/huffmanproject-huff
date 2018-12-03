@@ -60,7 +60,7 @@ public class HuffProcessor {
 		while (true){
 			Integer val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
-			String code = codings[Integer.parseInt(val.toString(),2)];
+			String code = codings[val];
 			 out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
 		String code = codings[PSEUDO_EOF];
