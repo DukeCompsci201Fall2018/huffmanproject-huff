@@ -87,7 +87,7 @@ public class HuffProcessor {
 		    	   if (bits == 0) {
 		    		   current = current.myLeft;
 		    	   }
-		    	   else {
+		    	   else if (bits ==1){
 		        	   current = current.myRight;
 		    	   }
 		    	   if (current.myLeft==null && current.myRight==null) {
