@@ -129,8 +129,11 @@ public class HuffProcessor {
 		int [] counts = new int [ALPH_SIZE + 1];
 		while (true){
 			Integer val = in.readBits(BITS_PER_WORD);
-			if (val == -1) break;
-			int charCode = Integer.parseInt(val.toString(), 2);
+			if (val == -1) {
+				break;
+			}
+			String s = val.toString();
+			int charCode = Integer.parseInt(s, 2);
 			counts[charCode]++;
 		}
 		counts[PSEUDO_EOF] = 1;
