@@ -63,6 +63,9 @@ public class HuffProcessor {
 			String code = codings[Integer.parseInt(val.toString(),2)];
 			 out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
+		String code = codings[PSEUDO_EOF];
+	    out.writeBits(code.length(), Integer.parseInt(code,2));
+
 
 		
 	}
@@ -81,50 +84,31 @@ public class HuffProcessor {
 	}
 		
 	
+
 	private String[] makeCodingsFromTree(HuffNode root) {
-		
-		doWork(root,"");
-		String[] ret = new String[myMap.size()];
-		int index = 0;
-		for(int s : myMap.keySet()) {
-			ret[index] = myMap.get(s);
-			index += 1;
-		}
-		return ret;
+	    String[] encodings = new String[ALPH_SIZE + 1];
+	    codingHelper(root,"",encodings);
+
+		return encodings;
 	}
-	
-	private void doWork(HuffNode root, String path) {
-		if (root == null) return;
+
+	private void codingHelper(HuffNode root, String string, String[] encodings) {
+			if (root.myLeft==null && root.myRight== null) {
+		        encodings[root.myValue] = string;
+		        return;
+		   }
+		   codingHelper(root.myLeft, string+"0", encodings);
+		   codingHelper(root.myRight, string+"1", encodings);
 		
-		if (root.myLeft == null && root.myRight == null) {
-			myMap.put(root.myValue, path);
-			return;
-		}
-		doWork(root.myLeft,path+"0");
-		doWork(root.myRight,path+"1");
 	}
-//	private String[] makeCodingsFromTree(HuffNode root) {
-//	    String[] encodings = new String[ALPH_SIZE + 1];
-//	    codingHelper(root,"",encodings);
-//
-//		return null;
-//	}
-//
-//	private void codingHelper(HuffNode root, String string, String[] encodings) {
-//		   if (root.myLeft==null && root.myRight== null) {
-//		        encodings[root.myValue] = path;
-//		        return;
-//		   }
-//		
-//	}
 
 	private HuffNode makeTreeFromCounts(int[] counts) {
 		//may need to reverse
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 		for(int t = 0; t<counts.length; t++) {
 			if (counts[t]>0) {
-				String s = Integer.toBinaryString(t);
-				pq.add(new HuffNode(Integer.parseInt(s),counts[t],null,null));
+				//String s = Integer.toBinaryString(t);
+				pq.add(new HuffNode(t,counts[t],null,null));
 			}
 		    
 		}
@@ -137,9 +121,8 @@ public class HuffProcessor {
 		    // left.weight+right.weight and left, right subtrees
 		    pq.add(s);
 		}
-		HuffNode root = pq.remove();
 
-		return root;
+		return pq.remove();
 	}
 
 	private int[] readForCounts(BitInputStream in) {
