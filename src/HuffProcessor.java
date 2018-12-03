@@ -130,8 +130,8 @@ public class HuffProcessor {
 		while (true){
 			Integer val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
-		//	int charCode = Integer.parseInt(val.toString(), 2);
-			counts[val]++;
+			int charCode = Integer.parseInt(val.toString(), 2);
+			counts[charCode]++;
 		}
 		counts[PSEUDO_EOF] = 1;
 		return counts;
