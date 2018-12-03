@@ -77,6 +77,9 @@ public class HuffProcessor {
 
 	private void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
 		 HuffNode current = root; 
+//		 if(current ==null) {
+//			 throw new HuffException("bad input, no tree");
+//		 }
 		   while (true) {
 			   
 		       int bits = in.readBits(1);
@@ -84,14 +87,13 @@ public class HuffProcessor {
 		           throw new HuffException("bad input, no PSEUDO_EOF");
 		       }
 		       else{
-		    	   
 		    	   if (bits == 0) {
 		    		   current = current.myLeft;
 		    	   }
 		    	   else if (bits ==1){
 		        	   current = current.myRight;
 		    	   }
-		    	   if (current.myLeft==null && current.myRight==null) {
+		    	   if (current != null&&current.myLeft==null && current.myRight==null) {
 			             if (current.myValue == PSEUDO_EOF) { 
 			                   break;
 			              }
@@ -117,9 +119,7 @@ public class HuffProcessor {
 		if (bits == -1) {
 			throw new HuffException("reading bits failed");
 		}
-//		if(bits == PSEUDO_EOF) {
-//			return new HuffNode(PSEUDO_EOF,0,null,null);
-//		}
+
 		if (bits == 0) {
 		    left = readTreeHeader(in);
 		    right = readTreeHeader(in);
