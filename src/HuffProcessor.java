@@ -69,14 +69,14 @@ public class HuffProcessor {
 
 	private void writeHeader(HuffNode root, BitOutputStream out) {
 		if (root.myLeft!=null || root.myRight!=null) {
-			out.write(0);
+			out.writeBits(1,0);
 		    writeHeader(root.myLeft, out);
 		    writeHeader(root.myRight, out);
 		}
 		else {
 		    int value = root.myValue;
-		    out.write(1);
-		    out.write(value);
+		    out.writeBits(1,1);
+		    out.writeBits(BITS_PER_WORD,value);
 		}
 	}
 		
@@ -121,10 +121,10 @@ public class HuffProcessor {
 	private HuffNode makeTreeFromCounts(int[] counts) {
 		//may need to reverse
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
-		Arrays.sort(counts);
-		for(Integer t : counts) {
+		for(int t = 0; t<counts.length; t++) {
 			if (counts[t]>0) {
-				pq.add(new HuffNode(t,counts[t],null,null));
+				String s = Integer.toBinaryString(t);
+				pq.add(new HuffNode(Integer.parseInt(s),counts[t],null,null));
 			}
 		    
 		}
@@ -151,7 +151,7 @@ public class HuffProcessor {
 			int charCode = Integer.parseInt(val.toString(), 2);
 			counts[charCode]+=1;
 		}
-		counts[counts.length-1] = 1;
+		counts[PSEUDO_EOF] = 1;
 		return counts;
 	}
 
