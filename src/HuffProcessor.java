@@ -77,9 +77,9 @@ public class HuffProcessor {
 
 	private void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
 		 HuffNode current = root; 
-//		 if(current ==null) {
-//			 throw new HuffException("bad input, no tree");
-//		 }
+		 if(current ==null) {
+			 throw new HuffException("bad input, no tree");
+		 }
 		   while (true) {
 			   
 		       int bits = in.readBits(1);
