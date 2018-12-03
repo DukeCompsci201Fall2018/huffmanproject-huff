@@ -61,9 +61,11 @@ public class HuffProcessor {
 			Integer val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
 			String code = codings[val];
+			System.out.println(code);
 			 out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
 		String code = codings[PSEUDO_EOF];
+		System.out.println(code);
 	    out.writeBits(code.length(), Integer.parseInt(code,2));
 
 
@@ -127,14 +129,17 @@ public class HuffProcessor {
 
 	private int[] readForCounts(BitInputStream in) {
 		int [] counts = new int [ALPH_SIZE + 1];
+		System.out.println(" blank");
 		while (true){
-			Integer val = in.readBits(BITS_PER_WORD);
+			int val = in.readBits(BITS_PER_WORD);
 			if (val == -1) {
 				break;
 			}
-			String s = val.toString();
-			int charCode = Integer.parseInt(s, 2);
-			counts[charCode]++;
+			
+			//String s = val.toString();
+			System.out.println(val + " random");
+		//	int charCode = Integer.parseInt(s, 2);
+			counts[val]+= 1;
 		}
 		counts[PSEUDO_EOF] = 1;
 		return counts;
