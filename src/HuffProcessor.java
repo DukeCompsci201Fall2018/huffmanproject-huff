@@ -115,7 +115,7 @@ public class HuffProcessor {
 		HuffNode left;
 		HuffNode right;
 		int value;
-		int bits = in.readBits(BITS_PER_INT);
+		int bits = in.readBits(1);
 		if (bits == -1) {
 			throw new HuffException("reading bits failed");
 		}
