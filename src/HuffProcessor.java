@@ -73,6 +73,9 @@ public class HuffProcessor {
 	}
 
 	private void writeHeader(HuffNode root, BitOutputStream out) {
+		if(out.bitsWritten()==0) {
+			out.writeBits(BITS_PER_INT, HUFF_NUMBER);
+		}
 		if (root.myLeft!=null || root.myRight!=null) {
 			out.writeBits(1,0);
 		    writeHeader(root.myLeft, out);
@@ -81,7 +84,7 @@ public class HuffProcessor {
 		else {
 		    int value = root.myValue;
 		    out.writeBits(1,1);
-		    out.writeBits(BITS_PER_WORD,value);
+		    out.writeBits(BITS_PER_WORD+1,value);
 		}
 	}
 		
@@ -118,7 +121,7 @@ public class HuffProcessor {
 		while (pq.size() > 1) {
 		    HuffNode left = pq.remove();
 		    HuffNode right = pq.remove();
-		    HuffNode s= new HuffNode(0,left.myWeight+right.myWeight,left,right);
+		    HuffNode s= new HuffNode(-1,left.myWeight+right.myWeight,left,right);
 		    // create new HuffNode t with weight from
 		    // left.weight+right.weight and left, right subtrees
 		    pq.add(s);
@@ -135,10 +138,7 @@ public class HuffProcessor {
 			if (val == -1) {
 				break;
 			}
-			
-			//String s = val.toString();
 			System.out.println(val + " random");
-		//	int charCode = Integer.parseInt(s, 2);
 			counts[val]+= 1;
 		}
 		counts[PSEUDO_EOF] = 1;
